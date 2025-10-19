@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signup = async (payload) => {
-    const { data } = await api.post('/api/auth/register', payload)
+    const { data } = await api.post('/api/auth/signup', payload)
     localStorage.setItem('ff_token', data.token)
     localStorage.setItem('ff_user', JSON.stringify(data.user))
     setUser(data.user)
