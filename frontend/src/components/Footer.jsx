@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function Footer(){
   return (
     <footer className="border-t mt-10 bg-white">
@@ -10,18 +12,18 @@ export default function Footer(){
           <div>
             <h4 className="font-semibold mb-2">Shop</h4>
             <ul className="space-y-1 text-sm text-gray-600">
-              <li><a href="/products" className="hover:text-primary">All Products</a></li>
-              <li><a href="/products" className="hover:text-primary">Classic</a></li>
-              <li><a href="/products" className="hover:text-primary">Pulpy</a></li>
-              <li><a href="/products" className="hover:text-primary">No Sugar</a></li>
+              <li><Link to="/products" className="hover:text-primary">All Products</Link></li>
+              <li><Link to="/products" className="hover:text-primary">Classic</Link></li>
+              <li><Link to="/products" className="hover:text-primary">Pulpy</Link></li>
+              <li><Link to="/products" className="hover:text-primary">No Sugar</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Company</h4>
             <ul className="space-y-1 text-sm text-gray-600">
-              <li><a href="/about" className="hover:text-primary">About</a></li>
-              <li><a href="/contact" className="hover:text-primary">Contact</a></li>
-              <li><a href="/orders" className="hover:text-primary">Orders</a></li>
+              <li><Link to="/about" className="hover:text-primary">About</Link></li>
+              <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
+              <li><Link to="/orders" className="hover:text-primary">Orders</Link></li>
             </ul>
           </div>
           <div>
