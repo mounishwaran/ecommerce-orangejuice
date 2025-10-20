@@ -1,0 +1,12 @@
+/* Lightweight 3D tilt effect */
+.tilt-on-hover {
+  perspective: 900px;
+}
+.tilt-on-hover .tilt-item {
+  transform: rotateX(0deg) rotateY(0deg) translateZ(0);
+  transition: transform 300ms ease;
+  transform-style: preserve-3d;
+}
+.tilt-on-hover:hover .tilt-item {
+  transform: rotateX(10deg) rotateY(10deg) translateZ(8px);
+}

@@ -25,7 +25,7 @@ export default function Checkout(){
     // In a full app you'd persist address; here we proceed to payment
     setTimeout(()=>{
       setLoading(false)
-      navigate('/payment')
+      navigate('/payment', { state: { payment: form.payment } })
     }, 300)
   }
 

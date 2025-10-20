@@ -48,7 +48,11 @@ export default function ProductCard({ product }){
   return (
     <motion.div whileHover={{ y: -4, scale: 1.01 }} initial={{opacity:0, y:6}} whileInView={{opacity:1, y:0}} viewport={{ once: true }} className="border rounded-lg p-4 flex flex-col">
       {modelSrc && !failed ? (
-        <div className="w-full h-56 rounded overflow-hidden bg-white flex items-center justify-center relative">
+        <div
+          className="w-full h-44 sm:h-52 md:h-56 lg:h-64 rounded overflow-hidden bg-white flex items-center justify-center relative"
+          onMouseEnter={() => { if (mvRef.current) mvRef.current.setAttribute('auto-rotate','') }}
+          onMouseLeave={() => { if (mvRef.current) mvRef.current.removeAttribute('auto-rotate') }}
+        >
           {loading && (
             <div className="absolute inset-0 flex items-center justify-center bg-white/60">
               <img src="/assets/loading.svg" alt="loading" className="h-10 w-10" />
@@ -58,20 +62,21 @@ export default function ProductCard({ product }){
             ref={mvRef}
             src={modelSrc ? encodeURI(modelSrc) : undefined}
             alt={product.name}
-            auto-rotate
-            camera-controls
+            disable-zoom
+            interaction-prompt="none"
+            className="pointer-events-none"
+            auto-rotate-delay="0"
             shadow-intensity="1"
             exposure="1.1"
             environment-image="neutral"
             poster="/assets/loading.svg"
-            style={{ width: '100%', height: '100%', borderRadius: '12px' }}
           ></model-viewer>
         </div>
       ) : (
-        <img src={src} alt={product.name} className="h-56 w-full object-cover rounded" />
+        <img src={src} alt={product.name} className="w-full h-44 sm:h-52 md:h-56 lg:h-64 object-cover rounded" />
       )}
-      <h3 className="mt-3 font-semibold text-lg">{product.name}</h3>
-      <p className="text-sm text-gray-600 flex-1">{product.description}</p>
+      <h3 className="mt-3 font-semibold text-lg line-clamp-2">{product.name}</h3>
+      <p className="text-sm text-gray-600 flex-1 line-clamp-2">{product.description}</p>
       <div className="flex items-center justify-between mt-3">
         <span className="font-bold">${product.price.toFixed(2)}</span>
         <button className="btn-primary" onClick={()=>add(product,1)}>Add to Cart</button>

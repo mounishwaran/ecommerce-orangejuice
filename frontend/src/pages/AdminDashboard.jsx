@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 export default function AdminDashboard(){
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
+  const [contacts, setContacts] = useState([])
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ name:'', price:'', description:'', imageURL:'', modelURL:'', size:'500ml', type:'Classic', active:true })
   const [editingId, setEditingId] = useState(null)
@@ -12,12 +13,14 @@ export default function AdminDashboard(){
   const load = async () => {
     setLoading(true)
     try {
-      const [{ data: prod }, { data: ord } ] = await Promise.all([
+      const [{ data: prod }, { data: ord }, { data: msgs } ] = await Promise.all([
         api.get('/api/products'),
-        api.get('/api/orders/all')
+        api.get('/api/orders/all'),
+        api.get('/api/contact')
       ])
       setProducts(prod)
       setOrders(ord)
+      setContacts(msgs)
     } catch (e) {
       toast.error('Failed to load admin data')
     } finally {
@@ -179,6 +182,27 @@ export default function AdminDashboard(){
               </div>
             ))}
           </div>
+        )}
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-3">Customer Messages</h2>
+        {loading ? 'Loading...' : (
+          contacts.length === 0 ? (
+            <div className="text-sm text-gray-600">No messages yet.</div>
+          ) : (
+            <div className="space-y-3">
+              {contacts.map(c => (
+                <div key={c._id} className="border rounded p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-semibold break-words">{c.name} <span className="text-gray-500 font-normal">({c.email})</span></div>
+                    <div className="text-xs text-gray-500">{new Date(c.createdAt).toLocaleString()}</div>
+                  </div>
+                  <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap break-words">{c.message}</p>
+                </div>
+              ))}
+            </div>
+          )
         )}
       </section>
     </div>

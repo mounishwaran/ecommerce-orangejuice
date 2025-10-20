@@ -30,23 +30,23 @@ export default function Signup(){
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md lg:max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-4">Create Account</h1>
       <form onSubmit={submit} className="space-y-3">
         <div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} />
+          <input className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Name" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} />
           {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
         </div>
         <div>
-          <input type="email" className="w-full border rounded px-3 py-2" placeholder="Email" value={form.email} onChange={(e)=>setForm({...form, email:e.target.value})} />
+          <input type="email" className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Email" value={form.email} onChange={(e)=>setForm({...form, email:e.target.value})} />
           {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
         </div>
         <div>
-          <input type="password" className="w-full border rounded px-3 py-2" placeholder="Password" value={form.password} onChange={(e)=>setForm({...form, password:e.target.value})} />
+          <input type="password" className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Password" value={form.password} onChange={(e)=>setForm({...form, password:e.target.value})} />
           {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
         </div>
         <div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Address (optional)" value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} />
+          <input className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Address (optional)" value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} />
         </div>
         <button disabled={loading} className="btn-primary w-full">{loading? 'Creating...' : 'Sign Up'}</button>
       </form>

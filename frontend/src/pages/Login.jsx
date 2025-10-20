@@ -33,15 +33,15 @@ export default function Login(){
   }
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md lg:max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
       <form onSubmit={submit} className="space-y-3">
         <div>
-          <input type="email" className="w-full border rounded px-3 py-2" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
+          <input type="email" className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} />
           {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
         </div>
         <div>
-          <input type="password" className="w-full border rounded px-3 py-2" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+          <input type="password" className="w-full border rounded px-4 py-3 text-base lg:px-5 lg:py-3.5 lg:text-lg" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)} />
           {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
         </div>
         {errors.form && <p className="text-sm text-red-600">{errors.form}</p>}
