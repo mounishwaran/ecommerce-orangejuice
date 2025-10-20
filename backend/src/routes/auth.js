@@ -6,11 +6,11 @@ import { register, login } from '../controllers/authController.js';
 const router = express.Router();
 
 router.post(
-  '/signup',
+  '/register',
   [
-    body('name').isString().notEmpty(),
-    body('email').isEmail(),
-    body('password').isLength({ min: 6 }),
+    body('name').isString().notEmpty().withMessage('This field is required.'),
+    body('email').isEmail().withMessage('Please enter a valid email.'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters.'),
     body('address').optional().isString(),
   ],
   validate,
@@ -19,7 +19,10 @@ router.post(
 
 router.post(
   '/login',
-  [body('email').isEmail(), body('password').isString().notEmpty()],
+  [
+    body('email').isEmail().withMessage('Please enter a valid email.'),
+    body('password').isString().notEmpty().withMessage('This field is required.'),
+  ],
   validate,
   login
 );

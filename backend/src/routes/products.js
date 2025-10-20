@@ -12,7 +12,10 @@ router.post(
   '/',
   protect,
   adminOnly,
-  [body('name').isString().notEmpty(), body('price').isFloat({ min: 0 })],
+  [
+    body('name').isString().notEmpty().withMessage('This field is required.'),
+    body('price').isFloat({ min: 0 }).withMessage('Price must be a positive number.'),
+  ],
   validate,
   createProduct
 );
@@ -21,7 +24,7 @@ router.put(
   '/:id',
   protect,
   adminOnly,
-  [param('id').isMongoId()],
+  [param('id').isMongoId().withMessage('Invalid product id')],
   validate,
   updateProduct
 );
@@ -30,7 +33,7 @@ router.delete(
   '/:id',
   protect,
   adminOnly,
-  [param('id').isMongoId()],
+  [param('id').isMongoId().withMessage('Invalid product id')],
   validate,
   deleteProduct
 );

@@ -54,6 +54,8 @@ export default function Products(){
       </form>
       {loading ? (
         <div>Loading...</div>
+      ) : products.length === 0 ? (
+        <div className="text-gray-600">No products found matching your search.</div>
       ) : (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((p)=> <ProductCard key={p._id} product={p} />)}

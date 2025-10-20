@@ -10,10 +10,17 @@ export default function Checkout(){
   const navigate = useNavigate()
   const [form, setForm] = useState({ name: user?.name || '', address: user?.address || '', phone: '' , payment: 'COD'})
   const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({ name:'', address:'', phone:'' })
 
   const submit = (e) => {
     e.preventDefault()
     if (!items.length) return toast.error('Cart is empty')
+    const next = { name:'', address:'', phone:'' }
+    if (!form.name) next.name = 'This field is required.'
+    if (!form.address) next.address = 'This field is required.'
+    if (!form.phone) next.phone = 'This field is required.'
+    setErrors(next)
+    if (next.name || next.address || next.phone) return
     setLoading(true)
     // In a full app you'd persist address; here we proceed to payment
     setTimeout(()=>{
@@ -26,9 +33,18 @@ export default function Checkout(){
     <div className="grid md:grid-cols-3 gap-8">
       <form onSubmit={submit} className="md:col-span-2 space-y-3">
         <h1 className="text-2xl font-bold">Checkout</h1>
-        <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} required />
-        <input className="w-full border rounded px-3 py-2" placeholder="Address" value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} required />
-        <input className="w-full border rounded px-3 py-2" placeholder="Phone" value={form.phone} onChange={(e)=>setForm({...form, phone:e.target.value})} required />
+        <div>
+          <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} />
+          {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+        </div>
+        <div>
+          <input className="w-full border rounded px-3 py-2" placeholder="Address" value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} />
+          {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address}</p>}
+        </div>
+        <div>
+          <input className="w-full border rounded px-3 py-2" placeholder="Phone" value={form.phone} onChange={(e)=>setForm({...form, phone:e.target.value})} />
+          {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+        </div>
         <select className="w-full border rounded px-3 py-2" value={form.payment} onChange={(e)=>setForm({...form, payment:e.target.value})}>
           <option value="COD">Cash on Delivery</option>
           <option value="Card">Card</option>
