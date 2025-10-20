@@ -20,6 +20,7 @@ export default function Payment(){
   const [couponPercent, setCouponPercent] = useState(0)
   const baseTotal = Number(total.toFixed(2))
   const finalTotal = +(baseTotal * (1 - (couponStatus === 'valid' ? couponPercent : 0)/100)).toFixed(2)
+  const contact = location.state?.contact || {}
 
   useEffect(()=>{
     if (!items.length) navigate('/cart')
@@ -71,9 +72,32 @@ export default function Payment(){
   const validate = () => {
     if (isCOD) return null // No card validation for Cash on Delivery
     const card = form.card.replace(/\s+/g,'')
-    if (card.length < 12) return 'Invalid card number'
-    if (!/^[0-9]{2}\/[0-9]{2}$/.test(form.expiry)) return 'Expiry must be MM/YY'
-    if (!/^[0-9]{3,4}$/.test(form.cvv)) return 'Invalid CVV'
+    if (!/^\d{16}$/.test(card)) return 'Card number must be 16 digits'
+    // Luhn check
+    const luhn = (num)=>{
+      let sum=0, dbl=false
+      for (let i=num.length-1;i>=0;i--) {
+        let d = parseInt(num[i],10)
+        if (dbl) { d*=2; if (d>9) d-=9 }
+        sum += d; dbl = !dbl
+      }
+      return sum % 10 === 0
+    }
+    if (!luhn(card)) return 'Invalid card number'
+    // Expiry MM/YY future and within 10 years
+    if (!/^\d{2}\/\d{2}$/.test(form.expiry)) return 'Expiry must be MM/YY'
+    const [mmStr, yyStr] = form.expiry.split('/')
+    const mm = parseInt(mmStr,10), yy = parseInt(yyStr,10)
+    if (mm<1 || mm>12) return 'Invalid expiry month'
+    const now = new Date()
+    const currentYY = now.getFullYear()%100
+    const currentMM = now.getMonth()+1
+    const within10 = yy <= ((currentYY+10)%100) || (currentYY+10>=100) // simple bound
+    const future = (yy>currentYY) || (yy===currentYY && mm>=currentMM)
+    if (!future) return 'Card is expired'
+    if (!within10) return 'Expiry too far in future'
+    // CVV 3 digits
+    if (!/^\d{3}$/.test(form.cvv)) return 'Invalid CVV'
     if (!form.name.trim()) return 'Name required'
     return null
   }
@@ -88,7 +112,17 @@ export default function Payment(){
       try {
         const payload = {
           items: items.map(i => ({ productId: i._id, quantity: i.quantity })),
-          totalAmount: finalTotal
+          totalAmount: finalTotal,
+          contact: {
+            name: contact?.name || '',
+            address: contact?.address || '',
+            phone: contact?.phone || '',
+            email: contact?.email || ''
+          },
+          payment: {
+            method: isCOD ? 'COD' : 'Card',
+            cardNumber: isCOD ? undefined : form.card.replace(/\s+/g,'')
+          }
         }
         await api.post('/api/orders', payload) // backend creates as Pending
         setDone(true)

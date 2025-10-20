@@ -15,6 +15,17 @@ router.post(
     body('items.*.productId').isMongoId(),
     body('items.*.quantity').isInt({ min: 1 }),
     body('totalAmount').isFloat({ min: 0 }),
+    body('contact').optional().isObject(),
+    body('contact.name').optional().custom((v)=> typeof v === 'string' && (/^[A-Za-z ]{3,}$/.test(v.trim()))),
+    body('contact.email').optional().custom((v)=> /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)),
+    body('contact.phone').optional().custom((v)=> {
+      const n = String(v).replace(/[^0-9]/g,'')
+      const ten = n.startsWith('91') ? n.slice(-10) : n
+      return /^[6-9][0-9]{9}$/.test(ten)
+    }),
+    body('payment').optional().isObject(),
+    body('payment.method').optional().isIn(['COD','Card','UPI']),
+    body('payment.cardNumber').optional().isLength({ min: 12, max: 19 }),
   ],
   validate,
   createOrder

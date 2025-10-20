@@ -163,24 +163,57 @@ export default function AdminDashboard(){
         <h2 className="text-xl font-semibold mb-3">Orders</h2>
         {loading ? 'Loading...' : (
           <div className="space-y-3">
-            {orders.map(o => (
-              <div key={o._id} className="border rounded p-3 flex items-center justify-between">
-                <div>
-                  <div className="font-semibold">Order #{o._id.slice(-6)}</div>
-                  <div className="text-sm text-gray-600">{new Date(o.createdAt).toLocaleString()} · ${o.totalAmount.toFixed(2)}</div>
+            {orders.map(o => {
+              const pay = o.payment || {}
+              const contact = o.contact || {}
+              const masked = pay.method === 'Card' ? `${pay.cardBrand || 'CARD'} •••• ${pay.cardLast4 || '____'}` : pay.method || 'COD'
+              const customerName = contact.name || o.userId?.name || o.userName || '—'
+              const customerEmail = contact.email || o.userId?.email || o.userEmail || '—'
+              const customerPhone = contact.phone || o.userId?.phone || o.userPhone || '—'
+              const customerAddress = contact.address || o.userId?.address || o.userAddress || '—'
+              const productNameById = new Map(products.map(p=>[String(p._id), p.name]))
+              return (
+                <div key={o._id} className="border rounded p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="font-semibold">Order #{o._id.slice(-6)}</div>
+                      <div className="text-sm text-gray-600">{new Date(o.createdAt).toLocaleString()} · ${o.totalAmount.toFixed(2)} · <span className="font-medium">{o.status}</span></div>
+                      <div className="text-sm">
+                        <div><span className="text-gray-600">Customer:</span> {customerName}</div>
+                        <div><span className="text-gray-600">Phone:</span> {customerPhone} · <span className="text-gray-600">Email:</span> {customerEmail}</div>
+                        <div className="text-gray-600">Address:</div>
+                        <div className="whitespace-pre-wrap break-words">{customerAddress}</div>
+                        <div className="mt-1"><span className="text-gray-600">Payment:</span> {masked}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select className="border rounded px-2 py-1" value={o.status} onChange={(e)=>updateStatus(o._id, e.target.value)}>
+                        <option>Pending</option>
+                        <option>Confirmed</option>
+                        <option>Preparing</option>
+                        <option>Out for Delivery</option>
+                        <option>Delivered</option>
+                      </select>
+                      <button className="px-3 py-1 border rounded text-red-600" onClick={()=>deleteOrder(o._id)}>Delete</button>
+                    </div>
+                  </div>
+                  <div className="mt-3 text-sm">
+                    <div className="font-medium mb-1">Items</div>
+                    <div className="grid md:grid-cols-2 gap-x-6 gap-y-1">
+                      {(o.items||[]).map((it, idx) => {
+                        const id = typeof it.productId === 'object' && it.productId?._id ? String(it.productId._id) : String(it.productId)
+                        const name = it.itemName || it.productId?.name || productNameById.get(id) || id
+                        return (
+                          <div key={idx} className="flex items-center justify-between">
+                            <span className="truncate pr-3">{name} × {it.quantity}</span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <select className="border rounded px-2 py-1" value={o.status} onChange={(e)=>updateStatus(o._id, e.target.value)}>
-                    <option>Pending</option>
-                    <option>Confirmed</option>
-                    <option>Preparing</option>
-                    <option>Out for Delivery</option>
-                    <option>Delivered</option>
-                  </select>
-                  <button className="px-3 py-1 border rounded text-red-600" onClick={()=>deleteOrder(o._id)}>Delete</button>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </section>

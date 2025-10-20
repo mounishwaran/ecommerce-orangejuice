@@ -12,20 +12,39 @@ export default function Checkout(){
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({ name:'', address:'', phone:'' })
 
+  const validateName = (v)=> /^[A-Za-z ]{3,}$/.test((v||'').trim()) ? '' : 'Name must be at least 3 letters (alphabets and spaces only).'
+  const validateAddress = (v)=> (v && v.trim().length>0) ? '' : 'This field is required.'
+  const validatePhone = (v)=>{
+    const normalized = String(v||'').replace(/[^0-9]/g,'')
+    const ten = normalized.startsWith('91') ? normalized.slice(-10) : normalized
+    return /^[6-9][0-9]{9}$/.test(ten) ? '' : 'Invalid phone number format'
+  }
+
+  const onChangeField = (key, value) => {
+    setForm(prev=>({ ...prev, [key]: value }))
+    // live-validate
+    if (key === 'name') setErrors(prev=>({ ...prev, name: validateName(value) }))
+    if (key === 'address') setErrors(prev=>({ ...prev, address: validateAddress(value) }))
+    if (key === 'phone') setErrors(prev=>({ ...prev, phone: validatePhone(value) }))
+  }
+
   const submit = (e) => {
     e.preventDefault()
     if (!items.length) return toast.error('Cart is empty')
-    const next = { name:'', address:'', phone:'' }
-    if (!form.name) next.name = 'This field is required.'
-    if (!form.address) next.address = 'This field is required.'
-    if (!form.phone) next.phone = 'This field is required.'
+    const next = {
+      name: validateName(form.name),
+      address: validateAddress(form.address),
+      phone: validatePhone(form.phone)
+    }
     setErrors(next)
     if (next.name || next.address || next.phone) return
     setLoading(true)
     // In a full app you'd persist address; here we proceed to payment
     setTimeout(()=>{
       setLoading(false)
-      navigate('/payment', { state: { payment: form.payment } })
+      const normalized = String(form.phone||'').replace(/[^0-9]/g,'')
+      const ten = normalized.startsWith('91') ? normalized.slice(-10) : normalized
+      navigate('/payment', { state: { payment: form.payment, contact: { name: form.name.trim(), address: form.address.trim(), phone: ten, email: user?.email || '' } } })
     }, 300)
   }
 
@@ -34,22 +53,22 @@ export default function Checkout(){
       <form onSubmit={submit} className="md:col-span-2 space-y-3">
         <h1 className="text-2xl font-bold">Checkout</h1>
         <div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={(e)=>setForm({...form, name:e.target.value})} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Name" value={form.name} onChange={(e)=>onChangeField('name', e.target.value)} />
           {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
         </div>
         <div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Address" value={form.address} onChange={(e)=>setForm({...form, address:e.target.value})} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Address" value={form.address} onChange={(e)=>onChangeField('address', e.target.value)} />
           {errors.address && <p className="text-sm text-red-600 mt-1">{errors.address}</p>}
         </div>
         <div>
-          <input className="w-full border rounded px-3 py-2" placeholder="Phone" value={form.phone} onChange={(e)=>setForm({...form, phone:e.target.value})} />
+          <input className="w-full border rounded px-3 py-2" placeholder="Phone" value={form.phone} onChange={(e)=>onChangeField('phone', e.target.value)} />
           {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
         </div>
         <select className="w-full border rounded px-3 py-2" value={form.payment} onChange={(e)=>setForm({...form, payment:e.target.value})}>
           <option value="COD">Cash on Delivery</option>
           <option value="Card">Card</option>
         </select>
-        <button disabled={loading} className="btn-primary">{loading ? 'Placing...' : 'Place Order'}</button>
+        <button disabled={loading || !!errors.name || !!errors.address || !!errors.phone} className="btn-primary">{loading ? 'Placing...' : 'Place Order'}</button>
       </form>
       <div className="border rounded p-4 h-fit">
         <h2 className="text-xl font-bold mb-2">Order Summary</h2>

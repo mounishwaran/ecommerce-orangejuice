@@ -10,16 +10,14 @@ export default function Login(){
   const [errors, setErrors] = useState({ email: '', password: '', form: '' })
   const navigate = useNavigate()
   const location = useLocation()
-
   const submit = async (e) => {
     e.preventDefault()
-    // client-side validation
-    const next = { email: '', password: '', form: '' }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Please enter a valid email.'
+    const next = { email:'', password:'', form:'' }
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email||'')
+    if (!emailOk) next.email = 'Please enter a valid email.'
     if (!password) next.password = 'This field is required.'
     setErrors(next)
     if (next.email || next.password) return
-
     setLoading(true)
     try {
       await login(email, password)
